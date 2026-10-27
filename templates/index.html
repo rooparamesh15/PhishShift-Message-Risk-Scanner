@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PhishShift | Message Risk Scanner</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="/"><span class="brand-icon">⌁</span><span>Phish<span class="accent">Shift</span><small>MESSAGE RISK SCANNER</small></span></a>
+      <div class="nav-label">WORKSPACE</div>
+      <a class="nav-item active" href="/"><span>▦</span> Dashboard</a>
+      <a class="nav-item" href="#scanner"><span>⌕</span> Scan a message</a>
+      <a class="nav-item" href="#guidance"><span>◇</span> Safety guidance</a>
+      <div class="sidebar-bottom">
+        <div class="shield">✓</div>
+        <strong>Stay one step ahead</strong>
+        <p>Pause. Check. Protect your information.</p>
+        <span class="demo-pill">DEMO SCANNER</span>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div><div class="eyebrow">SECURITY WORKSPACE / OVERVIEW</div><h1>Message Risk Dashboard</h1><p class="subheading">Check suspicious messages before you take action.</p></div>
+        <div class="status"><span class="status-dot"></span> Scanner ready</div>
+      </header>
+
+      <section class="welcome-banner">
+        <div class="banner-copy"><div class="banner-kicker">PHISHING AWARENESS</div><h2>Think before you click.</h2><p>Analyze message wording and links for common phishing warning signs.</p><a href="#scanner" class="banner-link">Start a scan <span>↗</span></a></div>
+        <div class="banner-art" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="big-shield">✓</div><span class="float-dot dot-one"></span><span class="float-dot dot-two"></span><span class="float-dot dot-three"></span></div>
+      </section>
+
+      <section class="stats-grid">
+        <article class="stat-card"><div class="stat-top"><span>Detection method</span><span class="stat-icon blue">⌕</span></div><div class="stat-value">Rule-based</div><div class="stat-note">Checks known risk patterns</div></article>
+        <article class="stat-card"><div class="stat-top"><span>Risk score</span><span class="stat-icon orange">⌁</span></div><div class="stat-value">0–100<span class="stat-unit"> scale</span></div><div class="stat-note">Higher score = more warning signs</div></article>
+        <article class="stat-card"><div class="stat-top"><span>Privacy</span><span class="stat-icon green">◇</span></div><div class="stat-value">No account</div><div class="stat-note">Text is scanned when submitted</div></article>
+      </section>
+
+      <section class="content-grid" id="scanner">
+        <article class="panel scanner-panel">
+          <div class="panel-heading"><div><div class="eyebrow">MESSAGE ANALYSIS</div><h2>Scan a message</h2><p>Paste an SMS, email, or chat message below.</p></div><span class="step-tag">01 / INPUT</span></div>
+          <form method="POST" action="/">
+            <label for="message">Message content</label>
+            <textarea id="message" name="message" maxlength="10000" placeholder="Example: Your account will be suspended! Verify your password now at http://example.com" required>{{ message }}</textarea>
+            <div class="textarea-footer"><span>Do not include real passwords or private codes.</span><span id="char-count">0 / 10000</span></div>
+            <div class="form-actions"><button class="primary-button" type="submit"><span>⌕</span> Analyze message <span class="arrow">→</span></button><button class="secondary-button" type="button" id="example-btn">Try example</button><button class="text-button" type="button" id="clear-btn">Clear</button></div>
+          </form>
+          {% if result %}
+          <div class="result-card {{ result.level|lower }}">
+            <div class="result-header"><div><div class="eyebrow">SCAN RESULT</div><h3>{{ result.label }}</h3></div><div class="score-ring {{ result.level|lower }}"><strong>{{ result.risk }}</strong><span>/100</span></div></div>
+            <div class="meter"><span style="width: {{ result.risk }}%"></span></div>
+            <p class="result-summary">{{ result.summary }}</p>
+            <h4>Indicators found</h4>
+            <div class="signals">
+              {% for signal in result.signals %}
+              <div class="signal"><span class="signal-mark">{% if signal.weight %}⚑{% else %}✓{% endif %}</span><div><strong>{{ signal.title }}</strong><p>{{ signal.detail }}</p></div><span class="weight">+{{ signal.weight }}</span></div>
+              {% endfor %}
+            </div>
+            {% if result.urls %}<div class="url-box"><strong>Links found</strong>{% for url in result.urls %}<code>{{ url }}</code>{% endfor %}</div>{% endif %}
+            <div class="recommendation-box"><strong>Recommended next steps</strong><ul>{% for item in result.recommendations %}<li>{{ item }}</li>{% endfor %}</ul></div>
+            <p class="disclaimer">This is a rule-based educational demo, not a definitive security verdict. A low score does not prove a message is safe.</p>
+          </div>
+          {% endif %}
+        </article>
+
+        <aside class="right-column">
+          <article class="panel quick-panel"><div class="panel-heading"><div><div class="eyebrow">QUICK CHECKLIST</div><h2>Spot the warning signs</h2></div></div>
+            <div class="check-row"><span class="check-icon coral">!</span><div><strong>Urgent pressure</strong><p>“Act now” or threats of account closure.</p></div></div>
+            <div class="check-row"><span class="check-icon purple">↗</span><div><strong>Unexpected links</strong><p>Unknown or shortened web addresses.</p></div></div>
+            <div class="check-row"><span class="check-icon amber">♢</span><div><strong>Private information</strong><p>Requests for passwords, PINs, or OTPs.</p></div></div>
+            <div class="check-row"><span class="check-icon blue">★</span><div><strong>Too-good-to-be-true offers</strong><p>Unexpected prizes, gifts, or refunds.</p></div></div>
+          </article>
+          <article class="tip-card" id="guidance"><div class="tip-icon">✦</div><div class="eyebrow">SAFETY TIP</div><h3>Verify through a trusted route</h3><p>If a message claims to be from a bank, delivery service, or company, open its official app or contact it using a known number.</p></article>
+        </aside>
+      </section>
+      <footer><span>PhishShift · Message Risk Scanner</span><span>Built for phishing awareness <b>•</b> Educational demo</span></footer>
+    </main>
+  </div>
+  <script>
+    const textarea = document.getElementById('message');
+    const count = document.getElementById('char-count');
+    function updateCount(){ count.textContent = `${textarea.value.length} / 10000`; }
+    textarea.addEventListener('input', updateCount); updateCount();
+    document.getElementById('example-btn').addEventListener('click', () => {
+      textarea.value = 'URGENT! Your bank account will be suspended. Verify your password immediately and click here: http://bit.ly/example-login';
+      updateCount(); textarea.focus();
+    });
+    document.getElementById('clear-btn').addEventListener('click', () => { textarea.value=''; updateCount(); textarea.focus(); });
+  </script>
+</body>
+</html>
